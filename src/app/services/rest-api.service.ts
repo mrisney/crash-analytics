@@ -3,6 +3,8 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { DataSource } from '../shared/data-source';
 import { Variable } from '../shared/variable';
 import { Filter } from '../shared/filter';
+import { FrequencyAnalysisRequest } from '../shared/frequency-analysis-request';
+import { FrequencyAnalysisData } from '../shared/frequency-analysis-data';
 import { ImpactAnalysisRequest } from '../shared/impact-analysis-request';
 import { ImpactAnalysisData } from '../shared/impact-analysis-data';
 import { Observable, throwError } from 'rxjs';
@@ -53,6 +55,15 @@ export class RestApiService {
             );
     }
 
+    // HttpClient API post() method => Get FrequencyAnalysisData as Array
+    getFrequencyAnalysis(request: FrequencyAnalysisRequest): Observable<FrequencyAnalysisData[]> {
+        return this.http.
+            post<FrequencyAnalysisData[]>(this.apiURL + '/api/v1/frequency-analysis', JSON.stringify(request), this.httpOptions)
+            .pipe(
+                retry(1),
+                catchError(this.handleError)
+            );
+    }
   
     // HttpClient API post() method => Get ImpactAnalysisData as Array
     getImpactAnalysis(request: ImpactAnalysisRequest): Observable<ImpactAnalysisData[]> {
