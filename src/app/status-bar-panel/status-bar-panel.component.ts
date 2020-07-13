@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
 import { IStatusPanelParams } from 'ag-grid-community';
-import { GridComponent } from '../grid/grid.component';
+import { FrequencyGridComponent } from '../frequency-grid/frequency-grid.component';
 
 @Component({
     selector: 'status-bar',
-    templateUrl: './status-bar-panel.component.html'
+    templateUrl: '../status-bar-panel/status-bar-panel.component.html'
 })
 export class StatusBarPanelComponent {
 
@@ -12,7 +12,7 @@ export class StatusBarPanelComponent {
     
     public visible = true;
 
-    constructor(public gridComponent: GridComponent) { }
+    constructor(public gridComponent: FrequencyGridComponent) { }
 
     agInit(params: IStatusPanelParams): void {
         this.params = params;

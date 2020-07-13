@@ -7,21 +7,13 @@
         <option *ngFor="let item of variables" value={{item.variable}}>{{item.variable}}</option>
     </select>
     
-    <select style="margin-left: 10px; margin-bottom: 10px; width: 180px" class="ag-theme-balham" formControlName="filter1Control" (change)="onFilter1Change($event.target.value)">
-        <option *ngFor="let item of filter1" value={{item.filter}}>{{item.filter}}</option>
+    <select style="margin-left: 10px; margin-bottom: 10px; width: 180px" class="ag-theme-balham" formControlName="filterControl" (change)="onFilterChange($event.target.value)">
+        <option *ngFor="let item of filters" value={{item.filter}}>{{item.filter}}</option>
     </select>
     
-    <select style="margin-left: 10px; margin-bottom: 10px; width: 180px" class="ag-theme-balham" formControlName="filter2Control" (change)="onFilter2Change($event.target.value)">
-        <option *ngFor="let item of filter2" value={{item.filter}}>{{item.filter}}</option>
-    </select>
-    <div style="margin-left: 10px; margin-bottom: 10px;display: block;">
-        <label class="ag-theme-balham">Supress Nulls ?
-            <input (change)="onNullableChange($event)" value="isNullable" type="checkbox"/>
-        </label>
-        <label style="margin-left: 10px;" class="ag-theme-balham">No Zeros ?
-            <input (change)="onNoZeroChange($event)" value="zeros" type="checkbox"/>
-        </label>
-    </div>
+    <label style="margin-left: 10px; margin-bottom: 10px;" class="ag-theme-balham">Supress Nulls ?
+        <input (change)="onNullableChange($event)" value="isNullable" type="checkbox"/>
+    </label>
 </form>
 
 <ag-grid-angular 
