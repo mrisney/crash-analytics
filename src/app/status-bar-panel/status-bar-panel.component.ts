@@ -3,17 +3,8 @@ import { IStatusPanelParams } from 'ag-grid-community';
 import { GridComponent } from '../grid/grid.component';
 
 @Component({
-    selector: 'frequency-status-component',
-    template: `
-        <div style="margin-left: 10px; margin-top: 8px; float:left;" class="container" *ngIf="visible">
-            <div style="float:left;">
-                <span class="component">Pie Chart <input type="button" (click)="renderPieChart()" value="open"/></span>
-            </div>
-            <div style="float:left; margin-left: 10px">
-                <span class="component">Bar Chart <input type="button" (click)="renderBarChart()" value="open"/></span>
-            </div>
-        </div>
-    `
+    selector: 'status-bar',
+    templateUrl: './status-bar-panel.component.html'
 })
 export class StatusBarPanelComponent {
 
