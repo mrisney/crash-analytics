@@ -7,6 +7,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { AgGridModule } from 'ag-grid-angular';
 import { AgChartsAngularModule } from 'ag-charts-angular';
 import { NgxTypeaheadModule } from 'ngx-typeahead';
+import { CrossTabAnalysisComponent } from './crosstab-analysis/crosstab-analysis.component';
 import { ImpactGridComponent } from './impact-grid/impact-grid.component';
 import { FrequencyGridComponent } from './frequency-grid/frequency-grid.component';
 import { StatusBarPanelComponent } from './status-bar-panel/status-bar-panel.component';
@@ -20,6 +21,7 @@ LicenseManager.setLicenseKey('yestae');
 
 @NgModule({
     declarations: [
+        CrossTabAnalysisComponent,
         FrequencyGridComponent,
         ImpactGridComponent,
         FrequencyGridComponent,
@@ -35,8 +37,8 @@ LicenseManager.setLicenseKey('yestae');
         AgGridModule.withComponents([StatusBarPanelComponent])
 
     ],
-    providers: [ImpactGridComponent, FrequencyGridComponent],
-    entryComponents: [ImpactGridComponent, FrequencyGridComponent, StatusBarPanelComponent]
+    providers: [CrossTabAnalysisComponent, ImpactGridComponent, FrequencyGridComponent],
+    entryComponents: [CrossTabAnalysisComponent, ImpactGridComponent, FrequencyGridComponent, StatusBarPanelComponent]
 })
 export class AppModule implements DoBootstrap {
 
@@ -49,6 +51,10 @@ export class AppModule implements DoBootstrap {
         const el2 = createCustomElement(ImpactGridComponent,
             { injector: this.injector });
         customElements.define('impact-grid', el2);
+
+        const el3 = createCustomElement(CrossTabAnalysisComponent,
+            { injector: this.injector });
+        customElements.define('crosstab-analysis', el3);
     }
 
     ngDoBootstrap() {

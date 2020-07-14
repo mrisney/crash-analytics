@@ -9,7 +9,7 @@ import { StatusBarPanelComponent } from '../status-bar-panel/status-bar-panel.co
 @Component({
     selector: 'frequency-grid',
     templateUrl: './frequency-grid.component.html',
-    styleUrls: ['frequency-grid.component.scss'],
+    styleUrls: ['../shared/analysis.component.scss'],
     encapsulation: ViewEncapsulation.ShadowDom
 })
 export class FrequencyGridComponent implements OnInit {

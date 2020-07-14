@@ -3,40 +3,38 @@ import { FormGroup, FormBuilder } from '@angular/forms';
 
 import { HttpClient } from '@angular/common/http';
 import { RestApiService } from '../services/rest-api.service';
-import { ImpactAnalysisRequest } from '../shared/impact-analysis-request';
+import { FrequencyAnalysisRequest } from '../shared/frequency-analysis-request';
 import { StatusBarPanelComponent } from '../status-bar-panel/status-bar-panel.component';
 
 @Component({
-    selector: 'impact-grid',
-    templateUrl: './impact-grid.component.html',
+    selector: 'crosstab-analysis',
+    templateUrl: './crosstab-analysis.component.html',
     styleUrls: ['../shared/analysis.component.scss'],
     encapsulation: ViewEncapsulation.ShadowDom
 })
-export class ImpactGridComponent implements OnInit {
+export class CrossTabAnalysisComponent implements OnInit {
 
     private gridApi;
     private gridColumnApi;
-    public  statusBar;
+    public statusBar;
 
     @Input() initChart: string;
     @Input() initDatasource: string;
-    @Input() initFilter1: string;
-    @Input() initFilter2: string;
+    @Input() initFilter: string;
     @Input() initVariable: string;
 
     datasource: string;
     variableName: string;
     datasources: any = [];
     variables: any = [];
-    filter1: any = [];
-    filter2: any = [];
+    filters: any = [];
 
     initChartType: string;
     chart: any;
     parameterForm: FormGroup;
     datasourceSelect: string;
 
-    request: ImpactAnalysisRequest;
+    request: FrequencyAnalysisRequest;
     rowData: any;
 
     public rowSelection: any;
@@ -44,30 +42,25 @@ export class ImpactGridComponent implements OnInit {
 
     columnDefs = [
         { headerName: 'Variable', field: 'variableCodes', sortable: true, filter: true, ColId: 'variableCol' },
-        { headerName: 'Subset Freq', field: 'frequency1', sortable: true, filter: true },
-        { headerName: 'Subset Pct', field: 'percent1', sortable: true, filter: true },
-        { headerName: 'Other Freq', field: 'frequency2', sortable: true, filter: true },
-        { headerName: 'Other Pct', field: 'percent2', sortable: true, filter: true },
-        { headerName: 'Over Rep', field: 'overRepresented', sortable: true, filter: true },
-        { headerName: 'Max Gain', field: 'maxGain', sortable: true, filter: true },
-        { headerName: 'Significant', field: 'isSignificant', sortable: true, filter: true }
+        { headerName: 'Frequency', field: 'frequency1', sortable: true, filter: true },
+        { headerName: 'Cum Frequency', field: 'cumulativeFrequency1', sortable: true, filter: true },
+        { headerName: 'Percent', field: 'percent1', sortable: true, filter: true },
+        { headerName: 'Cum Percent', field: 'cumulativePercent1', sortable: true, filter: true },
     ];
+
     constructor(private fb: FormBuilder, private http: HttpClient, public restApi: RestApiService) {
 
     }
-
 
     ngOnInit() {
 
         this.loadDataSources();
         this.datasource = this.initDatasource;
-        this.request = new ImpactAnalysisRequest();
+        this.request = new FrequencyAnalysisRequest();
         this.request.dataSourceName = this.datasource;
-        this.getFilter1();
-        this.request.filter1Name = this.initFilter1;
 
-        this.getFilter2();
-        this.request.filter1Name = this.initFilter2;
+        this.getFilters();
+        this.request.filterName = this.initFilter;
 
         this.getVariables();
         this.variableName = this.initVariable;
@@ -75,12 +68,11 @@ export class ImpactGridComponent implements OnInit {
 
         this.parameterForm = this.fb.group({
             variableControl: [this.initVariable],
-            filter1Control: [this.initFilter1],
-            filter2Control: [this.initFilter2]
+            filterControl: [this.initFilter]
         });
-        console.log('variable : ' + this.variableName + ', filter1 : ' + this.initFilter1 + ', filter2 : ' + this.initFilter2);
+        console.log('variable : ' + this.variableName + ', filter : ' + this.initFilter);
         this.request.suppressNulls = false;
-        this.getImpactAnalysis();
+        this.getFrequencyAnalysis();
 
         this.initChartType = this.initChart;
         this.rowSelection = 'multiple';
@@ -102,33 +94,41 @@ export class ImpactGridComponent implements OnInit {
         };
     }
 
-
-    autoSizeAll(skipHeader) {
-        var allColumnIds = [];
-        this.gridColumnApi.getAllColumns().forEach(function(column) {
-          allColumnIds.push(column.colId);
-        });
-        this.gridColumnApi.autoSizeColumns(allColumnIds, skipHeader);
-      }
-
     onGridReady(params) {
         this.gridApi = params.api;
         this.gridColumnApi = params.columnApi;
-        this.gridApi.sizeColumnsToFit()
-
         window.onresize = () => {
-            this.autoSizeAll(false);
+            this.gridApi.sizeColumnsToFit();
         }
     }
 
     onFirstDataRendered(params) {
         console.log('data onFirstDataRendered()...');
+        this.gridApi.sizeColumnsToFit();
+        if (this.initChartType) {
+            console.log("chart type = "+this.initChartType);
+            if (this.initChartType === 'pie') {
+                this.pieChart();
+            } else {
+                this.stackedBarChart();
+            }
+        }
     }
 
     onRowDataChanged(params) {
         console.log('data onRowDataChanged()...');
-        this.autoSizeAll(false);
+        this.gridApi.sizeColumnsToFit();
+        if (this.initChartType && this.chart) {
+            this.chart.destroyChart();
+            console.log("chart type = "+this.initChartType);
+            if (this.initChartType === 'pie') {
+                this.pieChart();
+            } else {
+                this.stackedBarChart();
+            }
+        }
     }
+
 
     loadDataSources() {
         return this.restApi.getDataSources().subscribe((data: {}) => {
@@ -139,63 +139,45 @@ export class ImpactGridComponent implements OnInit {
     onDataSourceChange(value: string) {
         this.datasource = value;
         this.getVariables();
-        this.getFilter1();
-        this.getFilter2();
+        this.getFilters();
         this.request.dataSourceName = value;
-        this.getImpactAnalysis();
+        this.getFrequencyAnalysis();
     }
 
     onVariableChange(value: string) {
         this.request.variableName = value;
-        this.getImpactAnalysis();
+        this.getFrequencyAnalysis();
         const variableColDef = this.gridColumnApi.getColumn('variableCodes').getColDef();
         variableColDef.headerName = value;
         this.gridApi.refreshHeader();
     }
 
-    onFilter1Change(value: string) {
-        this.request.filter1Name = value;
-        this.getImpactAnalysis();
-    }
-
-    onFilter2Change(value: string) {
-        console.log("Filter 2 name :" + value);
-        this.request.filter2Name = value;
-        this.getImpactAnalysis();
+    onFilterChange(value: string) {
+        this.request.filterName = value;
+        this.getFrequencyAnalysis();
     }
 
     onNullableChange(value: any) {
         console.log(value.currentTarget.checked);
         this.request.suppressNulls = value.currentTarget.checked;
-        this.getImpactAnalysis();
+        this.getFrequencyAnalysis();
     }
 
-    onNoZeroChange(value: any) {
-        console.log(value.currentTarget.checked);
-        this.request.noZeros = value.currentTarget.checked;
-        this.getImpactAnalysis();
-    }
     getVariables() {
         return this.restApi.getVariables(this.datasource).subscribe((data: {}) => {
             this.variables = data;
         });
     }
 
-    getFilter1() {
+    getFilters() {
         return this.restApi.getFilters(this.datasource).subscribe((data: {}) => {
-            this.filter1 = data;
+            this.filters = data;
         });
     }
 
-    getFilter2() {
-        return this.restApi.getFilters(this.datasource).subscribe((data: {}) => {
-            this.filter2 = data;
-        });
-    }
-
-    getImpactAnalysis() {
+    getFrequencyAnalysis() {
         console.log('request = ' + JSON.stringify(this.request));
-        this.rowData = this.restApi.getImpactAnalysis(this.request);
+        this.rowData = this.restApi.getFrequencyAnalysis(this.request);
     }
 
     pieChart() {
