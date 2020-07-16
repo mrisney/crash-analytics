@@ -8,6 +8,7 @@ import { FrequencyAnalysisData } from '../shared/frequency-analysis-data';
 import { ImpactAnalysisRequest } from '../shared/impact-analysis-request';
 import { ImpactAnalysisData } from '../shared/impact-analysis-data';
 import { CrossTabAnalysisRequest } from '../shared/crosstab-analysis-request';
+import { CrossTabAnalysisResponse } from '../shared/crosstab-analysis-response';
 import { CrossTabAnalysisData } from '../shared/crosstab-analysis-data';
 import { Observable, throwError } from 'rxjs';
 import { map, tap, retry, catchError } from 'rxjs/operators';
@@ -76,14 +77,18 @@ export class RestApiService {
                 catchError(this.handleError)
             );
     }
+    
 
      // HttpClient API post() method => Get CrossTabAnalysisData as Array
-     getCrossTabAnalysis(request: CrossTabAnalysisRequest): Observable<CrossTabAnalysisData[]> {
+     getCrossTabAnalysis(request: CrossTabAnalysisRequest): Observable<CrossTabAnalysisResponse> {
         return this.http.
-            post<CrossTabAnalysisData[]>(this.apiURL + '/api/v1/crosstab-analysis', JSON.stringify(request), this.httpOptions)
+            post<CrossTabAnalysisResponse>(this.apiURL + '/api/v1/crosstab-analysis', JSON.stringify(request), this.httpOptions)
             .pipe(
                 retry(1),
-                catchError(this.handleError)
+                tap( // Log the result or error
+                    data => console.log(data),
+                    error => console.log(error)
+                  )
             );
     }
 

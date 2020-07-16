@@ -43,6 +43,7 @@ LicenseManager.setLicenseKey('yestae');
 export class AppModule implements DoBootstrap {
 
     constructor(private injector: Injector) {
+        
         const el = createCustomElement(FrequencyGridComponent, {
             injector: this.injector
         });

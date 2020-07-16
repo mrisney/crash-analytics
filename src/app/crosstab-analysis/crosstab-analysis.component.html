@@ -3,17 +3,26 @@
         <option *ngFor="let item of datasources" value={{item.datasource}}>{{item.datasource}}</option>
     </select>
     
-    <select style="margin-left: 10px; margin-bottom: 10px; width: 180px" class="ag-theme-balham" formControlName="variableControl" (change)="onVariableChange($event.target.value)">
-        <option *ngFor="let item of variables" value={{item.variable}}>{{item.variable}}</option>
-    </select>
-    
     <select style="margin-left: 10px; margin-bottom: 10px; width: 180px" class="ag-theme-balham" formControlName="filterControl" (change)="onFilterChange($event.target.value)">
         <option *ngFor="let item of filters" value={{item.filter}}>{{item.filter}}</option>
     </select>
     
-    <label style="margin-left: 10px; margin-bottom: 10px;" class="ag-theme-balham">Supress Nulls ?
-        <input (change)="onNullableChange($event)" value="isNullable" type="checkbox"/>
-    </label>
+    <select style="margin-left: 10px; margin-bottom: 10px; width: 180px" class="ag-theme-balham" formControlName="variable1Control" (change)="onVariable1Change($event.target.value)">
+        <option *ngFor="let item of variables" value={{item.variable}}>{{item.variable}}</option>
+    </select>
+
+    <select style="margin-left: 10px; margin-bottom: 10px; width: 180px" class="ag-theme-balham" formControlName="variable2Control" (change)="onVariable2Change($event.target.value)">
+        <option *ngFor="let item of variables" value={{item.variable}}>{{item.variable}}</option>
+    </select>
+
+    <div style="margin-left: 10px; margin-bottom: 10px;display: block;">
+        <label class="ag-theme-balham">Supress Nulls ?
+            <input (change)="onNullableChange($event)" value="isNullable" type="checkbox"/>
+        </label>
+        <label style="margin-left: 10px;" class="ag-theme-balham">No Zeros ?
+            <input (change)="onNoZeroChange($event)" value="zeros" type="checkbox"/>
+        </label>
+    </div>
 </form>
 
 <ag-grid-angular 
@@ -26,6 +35,7 @@
     [columnDefs]="columnDefs"
     [statusBar]="statusBar"
     [rowSelection]="rowSelection"
+    [animateRows]="true"
     [frameworkComponents]="frameworkComponents"
     (gridReady)="onGridReady($event)"
     (firstDataRendered)="onFirstDataRendered($event)"

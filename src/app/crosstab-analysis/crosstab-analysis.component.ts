@@ -1,10 +1,15 @@
 import { Component, Input, OnInit, ViewEncapsulation } from '@angular/core';
 import { FormGroup, FormBuilder } from '@angular/forms';
+import { GridOptions, GridApi, ColumnApi } from 'ag-grid-community';
 
 import { HttpClient } from '@angular/common/http';
 import { RestApiService } from '../services/rest-api.service';
-import { FrequencyAnalysisRequest } from '../shared/frequency-analysis-request';
+import { CrossTabAnalysisRequest } from '../shared/crosstab-analysis-request';
+import { CrossTabAnalysisResponse } from '../shared/crosstab-analysis-response';
+import { CrossTabAnalysisData } from '../shared/crosstab-analysis-data';
 import { StatusBarPanelComponent } from '../status-bar-panel/status-bar-panel.component';
+
+import { inspect } from 'util';
 
 @Component({
     selector: 'crosstab-analysis',
@@ -16,6 +21,7 @@ export class CrossTabAnalysisComponent implements OnInit {
 
     private gridApi;
     private gridColumnApi;
+    private gridOptions: GridOptions;
     public statusBar;
 
     @Input() initChart: string;
@@ -24,30 +30,31 @@ export class CrossTabAnalysisComponent implements OnInit {
     @Input() initVariable: string;
 
     datasource: string;
-    variableName: string;
+    variable1Name: string;
+    variable2Name: string;
     datasources: any = [];
     variables: any = [];
     filters: any = [];
+
 
     initChartType: string;
     chart: any;
     parameterForm: FormGroup;
     datasourceSelect: string;
 
-    request: FrequencyAnalysisRequest;
-    rowData: any;
+    request: CrossTabAnalysisRequest;
+    rowData: any = [];
 
     public rowSelection: any;
     public frameworkComponents: any;
 
-    columnDefs = [
-        { headerName: 'Variable', field: 'variableCodes', sortable: true, filter: true, ColId: 'variableCol' },
-        { headerName: 'Frequency', field: 'frequency1', sortable: true, filter: true },
-        { headerName: 'Cum Frequency', field: 'cumulativeFrequency1', sortable: true, filter: true },
-        { headerName: 'Percent', field: 'percent1', sortable: true, filter: true },
-        { headerName: 'Cum Percent', field: 'cumulativePercent1', sortable: true, filter: true },
-    ];
 
+    columnDefs = [
+        { headerName: 'row', field: 'row', sortable: true, filter: true, ColId: 'variableCol' },
+        { headerName: 'valueList', field: 'valueList', rowGroup: true, hide: true },
+        { field: 'key' },
+        { field: 'value' },
+    ];
     constructor(private fb: FormBuilder, private http: HttpClient, public restApi: RestApiService) {
 
     }
@@ -56,23 +63,21 @@ export class CrossTabAnalysisComponent implements OnInit {
 
         this.loadDataSources();
         this.datasource = this.initDatasource;
-        this.request = new FrequencyAnalysisRequest();
+        this.request = new CrossTabAnalysisRequest();
         this.request.dataSourceName = this.datasource;
 
         this.getFilters();
         this.request.filterName = this.initFilter;
 
         this.getVariables();
-        this.variableName = this.initVariable;
-        this.request.variableName = this.initVariable;
-
         this.parameterForm = this.fb.group({
-            variableControl: [this.initVariable],
+            variable1Control: [this.variables],
+            variable2Control: [this.variables],
             filterControl: [this.initFilter]
         });
-        console.log('variable : ' + this.variableName + ', filter : ' + this.initFilter);
+        console.log('variable1 : ' + this.variable1Name + ', filter : ' + this.initFilter);
         this.request.suppressNulls = false;
-        this.getFrequencyAnalysis();
+        this.getCrossTabAnalysis();
 
         this.initChartType = this.initChart;
         this.rowSelection = 'multiple';
@@ -102,17 +107,11 @@ export class CrossTabAnalysisComponent implements OnInit {
         }
     }
 
-    onFirstDataRendered(params) {
+    onFirstDataRendered(event: any) {
         console.log('data onFirstDataRendered()...');
+        //
         this.gridApi.sizeColumnsToFit();
-        if (this.initChartType) {
-            console.log("chart type = "+this.initChartType);
-            if (this.initChartType === 'pie') {
-                this.pieChart();
-            } else {
-                this.stackedBarChart();
-            }
-        }
+
     }
 
     onRowDataChanged(params) {
@@ -120,7 +119,7 @@ export class CrossTabAnalysisComponent implements OnInit {
         this.gridApi.sizeColumnsToFit();
         if (this.initChartType && this.chart) {
             this.chart.destroyChart();
-            console.log("chart type = "+this.initChartType);
+            console.log("chart type = " + this.initChartType);
             if (this.initChartType === 'pie') {
                 this.pieChart();
             } else {
@@ -141,26 +140,42 @@ export class CrossTabAnalysisComponent implements OnInit {
         this.getVariables();
         this.getFilters();
         this.request.dataSourceName = value;
-        this.getFrequencyAnalysis();
-    }
-
-    onVariableChange(value: string) {
-        this.request.variableName = value;
-        this.getFrequencyAnalysis();
-        const variableColDef = this.gridColumnApi.getColumn('variableCodes').getColDef();
-        variableColDef.headerName = value;
-        this.gridApi.refreshHeader();
+        this.getCrossTabAnalysis();
     }
 
     onFilterChange(value: string) {
         this.request.filterName = value;
-        this.getFrequencyAnalysis();
+        this.getCrossTabAnalysis();
+    }
+
+    onVariable1Change(value: string) {
+        this.request.variable1Name = value;
+        console.log('variable1 : ' + value);
+        this.getCrossTabAnalysis();
+        //const variableColDef = this.gridColumnApi.getColumn('variableCodes').getColDef();
+        //variableColDef.headerName = value;
+        //this.gridApi.refreshHeader();
+    }
+
+    onVariable2Change(value: string) {
+        this.request.variable2Name = value;
+        console.log('variable2 : ' + value);
+        this.getCrossTabAnalysis();
+        //const variableColDef = this.gridColumnApi.getColumn('variableCodes').getColDef();
+        //variableColDef.headerName = value;
+        //this.gridApi.refreshHeader();
     }
 
     onNullableChange(value: any) {
         console.log(value.currentTarget.checked);
         this.request.suppressNulls = value.currentTarget.checked;
-        this.getFrequencyAnalysis();
+        this.getCrossTabAnalysis();
+    }
+
+    onNoZeroChange(value: any) {
+        console.log(value.currentTarget.checked);
+        this.request.noZeros = value.currentTarget.checked;
+        this.getCrossTabAnalysis();
     }
 
     getVariables() {
@@ -175,9 +190,29 @@ export class CrossTabAnalysisComponent implements OnInit {
         });
     }
 
-    getFrequencyAnalysis() {
-        console.log('request = ' + JSON.stringify(this.request));
-        this.rowData = this.restApi.getFrequencyAnalysis(this.request);
+    getColumns(jsonData) {
+        let cols: Array<string> = [];
+        var val = jsonData[0];
+        for (var j in val) {
+            var sub_key = j;
+            var sub_val = val[j];
+            cols.push(sub_key.trim())
+        }
+        return cols;
+    }
+
+    getCrossTabAnalysis() {
+        this.restApi.getCrossTabAnalysis(this.request).subscribe(
+            data => {
+                try {
+                    //console.log(JSON.stringify(data.crossTabAnalysisData));
+                    this.gridApi.setRowData(data.crossTabAnalysisData, error => { console.log(error) });
+                }
+                catch (Error) {
+                    console.log(Error.message);
+                }   
+            }
+        );
     }
 
     pieChart() {

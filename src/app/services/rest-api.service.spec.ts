@@ -1,12 +1,26 @@
-import { TestBed } from '@angular/core/testing';
 
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { RestApiService } from './rest-api.service';
+import { CrossTabAnalysisRequest } from '../shared/crosstab-analysis-request';
+import { HttpClientModule } from '@angular/common/http';
 
 describe('RestApiService', () => {
-  beforeEach(() => TestBed.configureTestingModule({}));
+  let component: RestApiService;
+  let fixture: ComponentFixture<RestApiService>;
 
-  it('should be created', () => {
-    const service: RestApiService = TestBed.get(RestApiService);
-    expect(service).toBeTruthy();
+  beforeEach(async(() => {
+      TestBed.configureTestingModule({
+          declarations: [RestApiService]
+      }).compileComponents();
+  }));
+
+  beforeEach(() => {
+      fixture = TestBed.createComponent(RestApiService);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+  });
+
+  it('should create', () => {
+      expect(component).toBeTruthy();
   });
 });
