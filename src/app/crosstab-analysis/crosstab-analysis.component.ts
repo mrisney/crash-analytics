@@ -1,5 +1,6 @@
 import { Component, Input, OnInit, ViewEncapsulation } from '@angular/core';
 import { FormGroup, FormBuilder } from '@angular/forms';
+import { JsonConvert, OperationMode, ValueCheckingMode } from "json2typescript"
 import { GridOptions, GridApi, ColumnApi } from 'ag-grid-community';
 
 import { HttpClient } from '@angular/common/http';
@@ -44,23 +45,19 @@ export class CrossTabAnalysisComponent implements OnInit {
 
     request: CrossTabAnalysisRequest;
     rowData: any = [];
+    gridData = [];
 
     public rowSelection: any;
     public frameworkComponents: any;
-
-
+    
     columnDefs = [
-        { headerName: 'row', field: 'row', sortable: true, filter: true, ColId: 'variableCol' },
-        { headerName: 'valueList', field: 'valueList', rowGroup: true, hide: true },
-        { field: 'key' },
-        { field: 'value' },
+        { headerName: this.variable1Name, field: 'row', rowGroup: true, hide: true},
+        { headerName: 'Key', field: 'key' },
+        { headerName: 'Value', field:'value' },
     ];
     constructor(private fb: FormBuilder, private http: HttpClient, public restApi: RestApiService) {
-
     }
-
     ngOnInit() {
-
         this.loadDataSources();
         this.datasource = this.initDatasource;
         this.request = new CrossTabAnalysisRequest();
@@ -102,6 +99,7 @@ export class CrossTabAnalysisComponent implements OnInit {
     onGridReady(params) {
         this.gridApi = params.api;
         this.gridColumnApi = params.columnApi;
+        this.gridOptions = {}
         window.onresize = () => {
             this.gridApi.sizeColumnsToFit();
         }
@@ -109,9 +107,7 @@ export class CrossTabAnalysisComponent implements OnInit {
 
     onFirstDataRendered(event: any) {
         console.log('data onFirstDataRendered()...');
-        //
         this.gridApi.sizeColumnsToFit();
-
     }
 
     onRowDataChanged(params) {
@@ -154,7 +150,7 @@ export class CrossTabAnalysisComponent implements OnInit {
         this.getCrossTabAnalysis();
         //const variableColDef = this.gridColumnApi.getColumn('variableCodes').getColDef();
         //variableColDef.headerName = value;
-        //this.gridApi.refreshHeader();
+        this.gridApi.refreshHeader();
     }
 
     onVariable2Change(value: string) {
@@ -163,7 +159,7 @@ export class CrossTabAnalysisComponent implements OnInit {
         this.getCrossTabAnalysis();
         //const variableColDef = this.gridColumnApi.getColumn('variableCodes').getColDef();
         //variableColDef.headerName = value;
-        //this.gridApi.refreshHeader();
+        this.gridApi.refreshHeader();
     }
 
     onNullableChange(value: any) {
@@ -189,28 +185,27 @@ export class CrossTabAnalysisComponent implements OnInit {
             this.filters = data;
         });
     }
-
-    getColumns(jsonData) {
-        let cols: Array<string> = [];
-        var val = jsonData[0];
-        for (var j in val) {
-            var sub_key = j;
-            var sub_val = val[j];
-            cols.push(sub_key.trim())
-        }
-        return cols;
-    }
-
     getCrossTabAnalysis() {
         this.restApi.getCrossTabAnalysis(this.request).subscribe(
             data => {
                 try {
-                    //console.log(JSON.stringify(data.crossTabAnalysisData));
-                    this.gridApi.setRowData(data.crossTabAnalysisData, error => { console.log(error) });
+                    this.gridData.length = 0;   
+                    this.gridApi.setRowData([]);
+                    for (const row in data.crossTabAnalysisData) {
+                        let rowValue =  data.crossTabAnalysisData[row].row;
+                        for (const kv in data.crossTabAnalysisData[row].valueList) {
+                            this.gridData.push({ row:rowValue, key: data.crossTabAnalysisData[row].valueList[kv].key, value: data.crossTabAnalysisData[row].valueList[kv].value });
+                            //console.log("key="+data.crossTabAnalysisData[row].valueList[kv].key); 
+                            //console.log("value="+data.crossTabAnalysisData[row].valueList[kv].value);
+                        }
+                    }
+                    this.gridApi.setRowData(this.gridData);
+                    //console.log("grid data = " + JSON.stringify(this.gridData));
+                    //this.gridApi.setRowData(Object.values(data.crossTabAnalysisData), error => { console.log(error) });
                 }
                 catch (Error) {
                     console.log(Error.message);
-                }   
+                }
             }
         );
     }
@@ -219,7 +214,7 @@ export class CrossTabAnalysisComponent implements OnInit {
         const cellRange = {
             rowStartIndex: 0,
             rowEndIndex: this.gridApi.getDisplayedRowCount(),
-            columns: ['variableCodes', 'frequency1']
+            columns: ['key', 'value']
         };
         const chartRangeParams = {
             cellRange: cellRange,
@@ -233,7 +228,7 @@ export class CrossTabAnalysisComponent implements OnInit {
         const cellRange = {
             rowStartIndex: 0,
             rowEndIndex: this.gridApi.getDisplayedRowCount(),
-            columns: ['variableCodes', 'frequency1']
+            columns: ['key', 'value']
         };
         const chartRangeParams = {
             cellRange: cellRange,
