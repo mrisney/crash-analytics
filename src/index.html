@@ -9,22 +9,20 @@
   <script src="../dist/crash-analytics.js"></script>
 </head>
 <style>
-  
-  /* Create two equal columns that floats next to each other */
+  .row {
+    display: table;
+    width: 100%;
+    /*Optional*/
+    table-layout: fixed;
+    /*Optional*/
+    border-spacing: 10px;
+    /*Optional*/
+  }
+
   .column {
-      float: left;
-      width: 50%;
-      padding: 10px;
-      height: 300px; /* Should be removed. Only for demonstration */
+    display: table-cell;
   }
-  
-  /* Clear floats after the columns */
-  .row:after {
-      content: "";
-      display: table;
-      clear: both;
-  }
-  </style>
+</style>
 
 <body>
 
@@ -44,17 +42,13 @@
         </frequency-analysis>
       </div>
     </div>
-  </div>
 
-  <div class="row">
     <div class="column">
       <div style="width: 800px; height: 350px;">
         <crosstab-analysis init-chart="pie" init-datasource="CRASHES_2010-2019" init-filter1="Year\2019"
           init-filter2="County\Albany" init-variable="County">
         </crosstab-analysis>
       </div>
-    </div>
-    <div class="column">
     </div>
   </div>
 </body>

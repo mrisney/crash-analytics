@@ -4,7 +4,7 @@ import { FormGroup, FormBuilder } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { RestApiService } from '../services/rest-api.service';
 import { ImpactAnalysisRequest } from '../shared/impact-analysis-request';
-import { StatusBarPanelComponent } from '../status-bar-panel/status-bar-panel.component';
+import { ImpactStatusBarComponent } from './impact-status-bar.component';
 
 @Component({
     selector: 'impact-grid',
@@ -86,7 +86,7 @@ export class ImpactGridComponent implements OnInit {
         this.rowSelection = 'multiple';
 
         this.frameworkComponents = {
-            statusBarPanelComponent: StatusBarPanelComponent
+            statusBarPanelComponent: ImpactStatusBarComponent
         };
         this.statusBar = {
             statusPanels: [

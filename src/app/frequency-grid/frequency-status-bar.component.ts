@@ -1,12 +1,12 @@
 import { Component } from '@angular/core';
 import { IStatusPanelParams } from 'ag-grid-community';
-import { FrequencyGridComponent } from '../frequency-grid/frequency-grid.component';
+import { FrequencyGridComponent } from './frequency-grid.component';
 
 @Component({
-    selector: 'status-bar',
-    templateUrl: '../status-bar-panel/status-bar-panel.component.html'
+    selector: 'frequency-status-bar',
+    templateUrl: '../frequency-grid/frequency-status-bar.component.html'
 })
-export class StatusBarPanelComponent {
+export class FrequencyStatusBarComponent {
 
     private params: IStatusPanelParams;
     

@@ -7,11 +7,12 @@ import { HttpClientModule } from '@angular/common/http';
 import { AgGridModule } from 'ag-grid-angular';
 import { AgChartsAngularModule } from 'ag-charts-angular';
 import { NgxTypeaheadModule } from 'ngx-typeahead';
-import { CrossTabGridComponent } from './crosstab-analysis/crosstab-grid.component';
+import { CrossTabGridComponent } from './crosstab-grid/crosstab-grid.component';
 import { ImpactGridComponent } from './impact-grid/impact-grid.component';
 import { FrequencyGridComponent } from './frequency-grid/frequency-grid.component';
-import { StatusBarPanelComponent } from './status-bar-panel/status-bar-panel.component';
-
+import { FrequencyStatusBarComponent } from './frequency-grid/frequency-status-bar.component';
+import { ImpactStatusBarComponent } from './impact-grid/impact-status-bar.component';
+import { CrossTabStatusBarComponent } from './crosstab-grid/crosstab-status-bar.component';
 import 'ag-grid-enterprise';
 
 import { LicenseManager } from 'ag-grid-enterprise';
@@ -25,7 +26,10 @@ LicenseManager.setLicenseKey('yestae');
         FrequencyGridComponent,
         ImpactGridComponent,
         FrequencyGridComponent,
-        StatusBarPanelComponent
+        FrequencyStatusBarComponent,
+        ImpactStatusBarComponent,
+        CrossTabStatusBarComponent
+
     ],
     imports: [
         BrowserModule,
@@ -34,11 +38,11 @@ LicenseManager.setLicenseKey('yestae');
         HttpClientModule,
         NgxTypeaheadModule,
         AgChartsAngularModule,
-        AgGridModule.withComponents([StatusBarPanelComponent])
+        AgGridModule.withComponents([FrequencyStatusBarComponent,ImpactStatusBarComponent,CrossTabStatusBarComponent])
 
     ],
     providers: [CrossTabGridComponent, ImpactGridComponent, FrequencyGridComponent],
-    entryComponents: [CrossTabGridComponent, ImpactGridComponent, FrequencyGridComponent, StatusBarPanelComponent]
+    entryComponents: [CrossTabGridComponent, ImpactGridComponent, FrequencyGridComponent, FrequencyStatusBarComponent,ImpactStatusBarComponent,CrossTabStatusBarComponent]
 })
 export class AppModule implements DoBootstrap {
 

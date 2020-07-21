@@ -4,7 +4,7 @@ import { FormGroup, FormBuilder } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { RestApiService } from '../services/rest-api.service';
 import { FrequencyAnalysisRequest } from '../shared/frequency-analysis-request';
-import { StatusBarPanelComponent } from '../status-bar-panel/status-bar-panel.component';
+import { FrequencyStatusBarComponent } from './frequency-status-bar.component';
 
 @Component({
     selector: 'frequency-grid',
@@ -78,7 +78,7 @@ export class FrequencyGridComponent implements OnInit {
         this.rowSelection = 'multiple';
 
         this.frameworkComponents = {
-            statusBarPanelComponent: StatusBarPanelComponent
+            statusBarPanelComponent: FrequencyStatusBarComponent
         };
         this.statusBar = {
             statusPanels: [

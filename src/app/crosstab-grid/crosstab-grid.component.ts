@@ -8,7 +8,7 @@ import { RestApiService } from '../services/rest-api.service';
 import { CrossTabAnalysisRequest } from '../shared/crosstab-analysis-request';
 import { CrossTabAnalysisResponse } from '../shared/crosstab-analysis-response';
 import { CrossTabAnalysisData } from '../shared/crosstab-analysis-data';
-import { StatusBarPanelComponent } from '../status-bar-panel/status-bar-panel.component';
+import { CrossTabStatusBarComponent } from './crosstab-status-bar.component';
 
 import { inspect } from 'util';
 
@@ -52,8 +52,8 @@ export class CrossTabGridComponent implements OnInit {
     
     columnDefs = [
         { headerName: this.variable1Name, field: 'row', rowGroup: true, hide: true},
-        { headerName: 'Key', field: 'key' },
-        { headerName: 'Value', field:'value' },
+        { headerName: 'Row', field: 'key' },
+        { headerName: 'Column', field:'value' },
     ];
     constructor(private fb: FormBuilder, private http: HttpClient, public restApi: RestApiService) {
     }
@@ -80,7 +80,7 @@ export class CrossTabGridComponent implements OnInit {
         this.rowSelection = 'multiple';
 
         this.frameworkComponents = {
-            statusBarPanelComponent: StatusBarPanelComponent
+            statusBarPanelComponent: CrossTabStatusBarComponent
         };
         this.statusBar = {
             statusPanels: [
@@ -167,12 +167,6 @@ export class CrossTabGridComponent implements OnInit {
     onNullableChange(value: any) {
         console.log(value.currentTarget.checked);
         this.request.suppressNulls = value.currentTarget.checked;
-        this.getCrossTabAnalysis();
-    }
-
-    onNoZeroChange(value: any) {
-        console.log(value.currentTarget.checked);
-        this.request.noZeros = value.currentTarget.checked;
         this.getCrossTabAnalysis();
     }
 
