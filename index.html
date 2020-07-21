@@ -8,36 +8,55 @@
   <script src="https://unpkg.com/ag-grid-enterprise/dist/ag-grid-enterprise.js"></script>
   <script src="../dist/crash-analytics.js"></script>
 </head>
+<style>
+  
+  /* Create two equal columns that floats next to each other */
+  .column {
+      float: left;
+      width: 50%;
+      padding: 10px;
+      height: 300px; /* Should be removed. Only for demonstration */
+  }
+  
+  /* Clear floats after the columns */
+  .row:after {
+      content: "";
+      display: table;
+      clear: both;
+  }
+  </style>
 
 <body>
 
-  <!--
-  <div style="display: inline-block">
-    <div style="width: 800px; height: 350px;">
-      <impact-grid init-chart="pie" init-datasource="CRASHES_2010-2019" init-filter1="Year\2019"
-        init-filter2="County\Albany" init-variable="County">
-      </impact-grid>
+  <div class="row">
+    <div class="column">
+      <div style="width: 800px; height: 350px;">
+        <impact-analysis init-chart="pie" init-datasource="CRASHES_2010-2019" init-filter1="Year\2019"
+          init-filter2="County\Albany" init-variable="County">
+        </impact-analysis>
+      </div>
+    </div>
+
+    <div class="column">
+      <div style="width: 700px; height: 350px;">
+        <frequency-analysis init-chart="pie" init-datasource="CRASHES_2010-2019" init-filter="Year\2019"
+          init-variable="County">
+        </frequency-analysis>
+      </div>
     </div>
   </div>
 
-  <div style="display: inline-block">
-    <div style="width: 700px; height: 350px;">
-      <frequency-grid init-chart="pie" init-datasource="CRASHES_2010-2019" init-filter="Year\2019"
-        init-variable="County">
-      </frequency-grid>
+  <div class="row">
+    <div class="column">
+      <div style="width: 800px; height: 350px;">
+        <crosstab-analysis init-chart="pie" init-datasource="CRASHES_2010-2019" init-filter1="Year\2019"
+          init-filter2="County\Albany" init-variable="County">
+        </crosstab-analysis>
+      </div>
+    </div>
+    <div class="column">
     </div>
   </div>
-
-  -->
-
-
-  <div style="width: 800px; height: 350px;">
-    <crosstab-analysis init-chart="pie" init-datasource="CRASHES_2010-2019" init-filter1="Year\2019"
-      init-filter2="County\Albany" init-variable="County">
-    </crosstab-analysis>
-  </div>
-
-
 </body>
 
 </html>

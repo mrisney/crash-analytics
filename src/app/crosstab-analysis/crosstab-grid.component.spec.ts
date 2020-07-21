@@ -1,19 +1,19 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { CrossTabAnalysisComponent } from './crosstab-analysis.component';
+import { CrossTabGridComponent } from './crosstab-grid.component';
 
-describe('CrossTabAnalysisComponent', () => {
-  let component: CrossTabAnalysisComponent;
-  let fixture: ComponentFixture<CrossTabAnalysisComponent>;
+describe('CrossTabGridComponent', () => {
+  let component: CrossTabGridComponent;
+  let fixture: ComponentFixture<CrossTabGridComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ CrossTabAnalysisComponent ]
+      declarations: [ CrossTabGridComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(CrossTabAnalysisComponent);
+    fixture = TestBed.createComponent(CrossTabGridComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

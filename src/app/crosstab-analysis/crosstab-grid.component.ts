@@ -14,11 +14,11 @@ import { inspect } from 'util';
 
 @Component({
     selector: 'crosstab-analysis',
-    templateUrl: './crosstab-analysis.component.html',
+    templateUrl: './crosstab-grid.component.html',
     styleUrls: ['../shared/analysis.component.scss'],
     encapsulation: ViewEncapsulation.ShadowDom
 })
-export class CrossTabAnalysisComponent implements OnInit {
+export class CrossTabGridComponent implements OnInit {
 
     private gridApi;
     private gridColumnApi;
@@ -136,6 +136,8 @@ export class CrossTabAnalysisComponent implements OnInit {
         this.getVariables();
         this.getFilters();
         this.request.dataSourceName = value;
+        this.gridData.length = 0;   
+        this.gridApi.setRowData([]);
         this.getCrossTabAnalysis();
     }
 

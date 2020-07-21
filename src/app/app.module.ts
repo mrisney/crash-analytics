@@ -7,7 +7,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { AgGridModule } from 'ag-grid-angular';
 import { AgChartsAngularModule } from 'ag-charts-angular';
 import { NgxTypeaheadModule } from 'ngx-typeahead';
-import { CrossTabAnalysisComponent } from './crosstab-analysis/crosstab-analysis.component';
+import { CrossTabGridComponent } from './crosstab-analysis/crosstab-grid.component';
 import { ImpactGridComponent } from './impact-grid/impact-grid.component';
 import { FrequencyGridComponent } from './frequency-grid/frequency-grid.component';
 import { StatusBarPanelComponent } from './status-bar-panel/status-bar-panel.component';
@@ -21,7 +21,7 @@ LicenseManager.setLicenseKey('yestae');
 
 @NgModule({
     declarations: [
-        CrossTabAnalysisComponent,
+        CrossTabGridComponent,
         FrequencyGridComponent,
         ImpactGridComponent,
         FrequencyGridComponent,
@@ -37,8 +37,8 @@ LicenseManager.setLicenseKey('yestae');
         AgGridModule.withComponents([StatusBarPanelComponent])
 
     ],
-    providers: [CrossTabAnalysisComponent, ImpactGridComponent, FrequencyGridComponent],
-    entryComponents: [CrossTabAnalysisComponent, ImpactGridComponent, FrequencyGridComponent, StatusBarPanelComponent]
+    providers: [CrossTabGridComponent, ImpactGridComponent, FrequencyGridComponent],
+    entryComponents: [CrossTabGridComponent, ImpactGridComponent, FrequencyGridComponent, StatusBarPanelComponent]
 })
 export class AppModule implements DoBootstrap {
 
@@ -47,13 +47,13 @@ export class AppModule implements DoBootstrap {
         const el = createCustomElement(FrequencyGridComponent, {
             injector: this.injector
         });
-        customElements.define('frequency-grid', el);
+        customElements.define('frequency-analysis', el);
 
         const el2 = createCustomElement(ImpactGridComponent,
             { injector: this.injector });
-        customElements.define('impact-grid', el2);
+        customElements.define('impact-analysis', el2);
 
-        const el3 = createCustomElement(CrossTabAnalysisComponent,
+        const el3 = createCustomElement(CrossTabGridComponent,
             { injector: this.injector });
         customElements.define('crosstab-analysis', el3);
     }
